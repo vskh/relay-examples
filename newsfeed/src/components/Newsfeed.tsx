@@ -1,24 +1,61 @@
 import * as React from "react";
+import {
+  graphql,
+  useLazyLoadQuery,
+  usePreloadedQuery,
+  PreloadedQuery,
+} from "react-relay";
 import Story from "./Story";
+import type { NewsfeedQuery as NewsfeedQueryType } from "./__generated__/NewsfeedQuery.graphql";
+import { usePreloadingEnvironmentQuery } from "./PreloadingEnvironment";
 
-export default function Newsfeed() {
-  const story = {
-    title: "Placeholder Story",
-    summary: "Placeholder data, to be replaced with data fetched via GraphQL",
-    poster: {
-      name: "Placeholder Person",
-      profilePicture: {
-        url: "/assets/cat_avatar.png",
-      },
-    },
-    thumbnail: {
-      url: "/assets/placeholder.jpeg",
-    },
-  };
+export const NewsfeedQuery = graphql`
+  query NewsfeedQuery($categories: [Category!] = []) {
+    topStories(categories: $categories) {
+      ...StoryFragment
+    }
+  }
+`;
+
+function NewsfeedContent({ data }: { data: NewsfeedQueryType["response"] }) {
+  const stories = data.topStories;
 
   return (
     <div className="newsfeed">
-      <Story story={story} />
+      {stories.map((story, index) => (
+        <Story key={index} story={story} />
+      ))}
     </div>
   );
+}
+
+function PreloadedNewsfeed({
+  queryRef,
+}: {
+  queryRef: PreloadedQuery<NewsfeedQueryType>;
+}) {
+  console.log("PreloadedNewsfeed using queryRef", queryRef);
+  const data = usePreloadedQuery<NewsfeedQueryType>(NewsfeedQuery, queryRef);
+  return <NewsfeedContent data={data} />;
+}
+
+function LazyNewsfeed() {
+  console.log("LazyNewsfeed loading query...");
+  const data = useLazyLoadQuery<NewsfeedQueryType>(NewsfeedQuery, { categories: ["NEWS", "EDUCATION"] });
+  return <NewsfeedContent data={data} />;
+}
+
+export default function Newsfeed() {
+  const { mode, queryRef } = usePreloadingEnvironmentQuery();
+
+  switch (mode) {
+    case "preloaded":
+      return queryRef ? <PreloadedNewsfeed queryRef={queryRef} /> : null;
+    case "cached":
+      return queryRef ? <LazyNewsfeed /> : null;
+    default:
+      break;
+  }
+
+  return <LazyNewsfeed />;
 }

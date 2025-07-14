@@ -352,8 +352,21 @@ export function topStoryResolver(_, { category }) {
   }
 }
 
-export function topStoriesResolver() {
-  return nodes.filter((node) => node.__typename === "Story").slice(0, 3);
+export function topStoriesResolver(_, { categories }) {
+  if (!Array.isArray(categories) || categories.length === 0) {
+    return nodes.filter((node) => node.__typename === "Story").slice(0, 3);
+  }
+  return nodes
+    .filter(
+      (node) =>
+        node.__typename === "Story" && categories.includes(node.category)
+    ).reduce((acc, node) => {
+      if (!acc.some(el => el.category === node.category)) {
+        acc.push(node);
+      }
+
+      return acc;
+    }, []);
 }
 
 export function storyPosterResolver(story) {

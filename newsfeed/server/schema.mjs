@@ -260,6 +260,11 @@ const QueryType = new GraphQLObjectType({
     topStories: {
       type: new GraphQLList(StoryType),
       resolve: topStoriesResolver,
+      args: {
+        categories: {
+          type: new GraphQLList(CategoryType),
+        },
+      }
     },
   },
 });
