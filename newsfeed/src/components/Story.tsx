@@ -9,6 +9,8 @@ import type { StoryFragment$key } from "./__generated__/StoryFragment.graphql";
 
 const StoryFragment = graphql`
   fragment StoryFragment on Story {
+    __typename
+    id
     title
     summary
     createdAt

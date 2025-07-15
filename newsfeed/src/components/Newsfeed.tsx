@@ -10,15 +10,15 @@ import type { NewsfeedQuery as NewsfeedQueryType } from "./__generated__/Newsfee
 import { usePreloadingEnvironmentQuery } from "./PreloadingEnvironment";
 
 export const NewsfeedQuery = graphql`
-  query NewsfeedQuery($categories: [Category!] = []) {
-    topStories(categories: $categories) {
+  query NewsfeedQuery($ids: [ID!]!) {
+    storiesByIds(ids: $ids) {
       ...StoryFragment
     }
   }
 `;
 
 function NewsfeedContent({ data }: { data: NewsfeedQueryType["response"] }) {
-  const stories = data.topStories;
+  const stories = data.storiesByIds;
 
   return (
     <div className="newsfeed">
@@ -41,7 +41,7 @@ function PreloadedNewsfeed({
 
 function LazyNewsfeed() {
   console.log("LazyNewsfeed loading query...");
-  const data = useLazyLoadQuery<NewsfeedQueryType>(NewsfeedQuery, { categories: ["NEWS", "EDUCATION"] });
+  const data = useLazyLoadQuery<NewsfeedQueryType>(NewsfeedQuery, { ids: ["2", "3"] });
   return <NewsfeedContent data={data} />;
 }
 

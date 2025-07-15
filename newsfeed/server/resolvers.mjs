@@ -369,6 +369,10 @@ export function topStoriesResolver(_, { categories }) {
     }, []);
 }
 
+export function storiesByIdResolver(_, { ids }) {
+  return nodes.filter((node) => node.__typename === "Story" && ids.includes(node.id));
+}
+
 export function storyPosterResolver(story) {
   return nodeResolver({ id: story.authorID });
 }

@@ -27,7 +27,7 @@ export default function PreloadingEnvironment({
 
   useEffect(() => {
     console.log("Kicking off query preloading...");
-    loadQuery({ categories: ["NEWS","EDUCATION"]});
+    loadQuery({ ids: ["2", "3", "4"] });
   }, []);
 
   console.log("PreloadingEnvironment queryRef", queryRef);

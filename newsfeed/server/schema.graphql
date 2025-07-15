@@ -131,6 +131,7 @@ type Query {
   node(id: ID!): Node
   topStory(category: Category): Story
   topStories(categories: [Category!]): [Story]
+  storiesByIds(ids: [ID!]!): [Story]
 }
 
 type Viewer {
