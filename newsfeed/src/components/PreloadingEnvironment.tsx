@@ -34,7 +34,7 @@ export default function PreloadingEnvironment({
 
   return (
     <PreloadingEnvironmentContext.Provider
-      value={{ mode: "cached", queryRef }}
+      value={{ mode: "lazy", queryRef }}
     >
       {children}
     </PreloadingEnvironmentContext.Provider>

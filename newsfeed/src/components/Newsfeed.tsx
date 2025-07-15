@@ -5,7 +5,7 @@ import {
   usePreloadedQuery,
   PreloadedQuery,
 } from "react-relay";
-import Story from "./Story";
+import Story, { StandaloneStory } from "./Story";
 import type { NewsfeedQuery as NewsfeedQueryType } from "./__generated__/NewsfeedQuery.graphql";
 import { usePreloadingEnvironmentQuery } from "./PreloadingEnvironment";
 
@@ -45,6 +45,21 @@ function LazyNewsfeed() {
   return <NewsfeedContent data={data} />;
 }
 
+function SuperLazyNewsfeed({queryRef}: {queryRef: PreloadedQuery<NewsfeedQueryType, Record<string, unknown>>}) {
+  console.log("SuperLazyNewsfeed loading story by story...");
+  const data = usePreloadedQuery(NewsfeedQuery, queryRef);
+  console.log("Finished preloading: ", data);
+
+  const [shouldLoad, setShouldLoad] = React.useState(false);
+  
+  return <>
+    <button onClick={() => setShouldLoad(true)}>Load stories</button>
+    {shouldLoad && ["2", "3"].map(id => (
+      <StandaloneStory key={id} id={id} />
+    ))}
+  </>;
+}
+
 export default function Newsfeed() {
   const { mode, queryRef } = usePreloadingEnvironmentQuery();
 
@@ -54,7 +69,7 @@ export default function Newsfeed() {
     case "cached":
       return queryRef ? <LazyNewsfeed /> : null;
     default:
-      break;
+      return queryRef ? <SuperLazyNewsfeed queryRef={queryRef} /> : null;
   }
 
   return <LazyNewsfeed />;

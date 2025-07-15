@@ -4,8 +4,9 @@ import Heading from "./Heading";
 import PosterByline from "./PosterByline";
 import StorySummary from "./StorySummary";
 import Image from "./Image";
-import { useFragment, graphql } from "react-relay";
+import { useFragment, graphql, useLazyLoadQuery } from "react-relay";
 import type { StoryFragment$key } from "./__generated__/StoryFragment.graphql";
+import { StoryQuery as StoryQueryType } from "./__generated__/StoryQuery.graphql";
 
 const StoryFragment = graphql`
   fragment StoryFragment on Story {
@@ -19,6 +20,14 @@ const StoryFragment = graphql`
     }
     thumbnail {
       ...ImageFragment @arguments(width: 400)
+    }
+  }
+`;
+
+const StoryQuery = graphql`
+  query StoryQuery($id: ID!) {
+    storyById(id: $id) {
+      ...StoryFragment
     }
   }
 `;
@@ -37,4 +46,11 @@ export default function Story({ story }: Props): React.ReactElement {
       <StorySummary summary={data.summary} />
     </Card>
   );
+}
+
+export function StandaloneStory({ id }: { id: string }): React.ReactElement {
+  console.log("Loading data for Story:", id);
+  const data = useLazyLoadQuery<StoryQueryType>(StoryQuery, { id }, {fetchPolicy: "store-or-network"});
+  console.log("Done: ", data);
+  return <Story story={data?.storyById} />;
 }

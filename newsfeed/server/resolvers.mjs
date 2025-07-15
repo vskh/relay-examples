@@ -373,6 +373,10 @@ export function storiesByIdResolver(_, { ids }) {
   return nodes.filter((node) => node.__typename === "Story" && ids.includes(node.id));
 }
 
+export function storyByIdResolver(_, {id}) {
+  return nodes.find((node) => node.__typename === "Story" && node.id === id);
+}
+
 export function storyPosterResolver(story) {
   return nodeResolver({ id: story.authorID });
 }

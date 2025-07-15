@@ -14,7 +14,8 @@ import {
   resolveLikeStoryMutation,
   resolvePostStoryCommentMutation,
   resolveImageURL,
-  storiesByIdResolver
+  storiesByIdResolver,
+  storyByIdResolver
 } from "./resolvers.mjs";
 
 import {
@@ -273,6 +274,13 @@ const QueryType = new GraphQLObjectType({
         ids: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) },
       },
       resolve: storiesByIdResolver,
+    },
+    storyById: {
+      type: StoryType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: storyByIdResolver,
     }
   },
 });
